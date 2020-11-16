@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.organizations.apps.OrganizationsConfig',
     'crispy_forms',
     'xadmin.apps.XAdminConfig',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,14 @@ USE_TZ = False   #改为 False，不然 django 自动生成的datetime就会使�
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
+
+
+#云片网相关设置
+yp_apikey = 'f810e2e75f2b5acad379bce56db1cfc3'
+
+# redis 相关配置
+# 1.如果重启 django 变量不存在
+# 2.随着验证码越来越多，内存占用越来越大，验证码过期
+# 3.redis k-v
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
