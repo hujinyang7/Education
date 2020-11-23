@@ -1,11 +1,14 @@
 #coding:utf-8
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import include
+from django.conf.urls import include, url
 from django.views.generic import TemplateView
 from apps.users.views import LoginView, LogoutView, SendSmsView, DyanmicLoginView, RegisterView
 from django.views.decorators.csrf import csrf_exempt  #去除csrf_token验证
 
+from apps.organizations.views import OrgView
+from django.views.static import serve
+from MxOline.settings import MEDIA_ROOT
 import xadmin
 #xadmin会发现我们自己注册的UserProfile并把它注册到后台，admin如果覆盖了user表则不会注册到后台
 
@@ -20,6 +23,15 @@ urlpatterns = [
     path('logout/',LogoutView.as_view(),name='logout'),
     path('captcha/', include('captcha.urls')),
     path('send_sms/', csrf_exempt(SendSmsView.as_view()), name='send_sms'),
+
+    #配置上传文件的访问url
+    url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),
+    #机构相关页面
+    # path('org_list/', OrgView.as_view(),name='org_list'),
+    url(r'^org/', include(('apps.organizations.urls', 'organizations'), namespace='org')),
+
+    #用户相关操作
+    url(r'^op/', include(('apps.operations.urls', 'operations'), namespace='op')),
 ]
 
 

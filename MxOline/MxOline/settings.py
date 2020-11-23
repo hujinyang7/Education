@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'xadmin.apps.XAdminConfig',
     'captcha',
+    'pure_pagination',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -143,3 +145,18 @@ yp_apikey = 'f810e2e75f2b5acad379bce56db1cfc3'
 # 3.redis k-v
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+
+#分页相关设置
+PAGINATION_SETTINGS = {
+    #中间部分显示多少个页码
+    'PAGE_RANGE_DISPLAYED': 6,
+    #首尾两端显示多少个页码
+    'MARGIN_PAGES_DISPLAYED': 3,
+
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}

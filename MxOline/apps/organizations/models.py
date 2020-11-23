@@ -1,5 +1,6 @@
 from django.db import models
 
+
 from apps.users.models import BaseModel
 
 
@@ -27,7 +28,15 @@ class CourseOrg(BaseModel):
     address = models.CharField(max_length=150,verbose_name='机构地址')
     students = models.IntegerField(default=0,verbose_name='学习人数')
     course_nums = models.IntegerField(default=0,verbose_name='课程数')
+
+    is_auth = models.BooleanField(default=False, verbose_name='是否认证')
+    is_gold = models.BooleanField(default=False, verbose_name='是否是金牌')
+
     city = models.ForeignKey(City,on_delete=models.CASCADE,verbose_name='所在城市')
+
+    def courses(self):
+        courses = self.course_set.filter(is_classics=True)[:3]
+        return courses
 
     class Meta:
         verbose_name = '课程机构'
@@ -56,3 +65,6 @@ class Teacher(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def course_nums(self):
+        return self.course_set.all().count()
