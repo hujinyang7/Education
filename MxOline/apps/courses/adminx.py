@@ -1,6 +1,6 @@
 import xadmin
 
-from apps.courses.models import Course, Lesson, Video, CourseResource
+from apps.courses.models import Course, Lesson, Video, CourseResource, CourseTag
 
 
 #设置页眉页脚
@@ -34,14 +34,20 @@ class VideoAdmin(object):
 
 
 class CourseResourceAdmin(object):
-    list_display = ['course','name','download','add_time']
-    search_fields = ['course','name','download']
-    list_filter = ['course','name','download','add_time']
+    list_display = ['course','name','file','add_time']
+    search_fields = ['course','name','file']
+    list_filter = ['course','name','file','add_time']
+
+class CourseTagAdmin(object):
+    list_display = ['course','tag', 'add_time']
+    search_fields = ['course','tag']
+    list_filter = ['course','tag', 'add_time']
 
 xadmin.site.register(Course, CourseAdmin)
 xadmin.site.register(Lesson, LessonAdmin)
 xadmin.site.register(Video, VideoAdmin)
 xadmin.site.register(CourseResource, CourseResourceAdmin)
+xadmin.site.register(CourseTag, CourseTagAdmin)
 
 xadmin.site.register(xadmin.views.CommAdminView,GlobalSettings)
 xadmin.site.register(xadmin.views.BaseAdminView,BaseSettings)

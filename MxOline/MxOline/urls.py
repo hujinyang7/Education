@@ -26,9 +26,13 @@ urlpatterns = [
 
     #配置上传文件的访问url
     url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),
+
     #机构相关页面
     # path('org_list/', OrgView.as_view(),name='org_list'),
     url(r'^org/', include(('apps.organizations.urls', 'organizations'), namespace='org')),
+
+    #机构相关页面
+    url(r'^course/', include(('apps.courses.urls', 'courses'), namespace='course')),
 
     #用户相关操作
     url(r'^op/', include(('apps.operations.urls', 'operations'), namespace='op')),

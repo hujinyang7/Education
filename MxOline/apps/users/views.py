@@ -42,6 +42,15 @@ class RegisterView(View):
 
 
 class DyanmicLoginView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("index"))
+        next = request.GET.get("next", "")
+        login_form = DynamicLoginForm()
+        return render(request, "login.html",{
+            "login_form":login_form,
+            "next":next,
+        })
     def post(self, request, *args, **kwargs):
         login_form = DyanmicLoginPostForm(request.POST)
         dynamic_login = True
@@ -59,6 +68,9 @@ class DyanmicLoginView(View):
                 user.mobile = mobile
                 user.save()
             login(request, user)
+            next = request.GET.get("next", "")
+            if next:
+                return HttpResponseRedirect(next)
             return HttpResponseRedirect(reverse('index'))
         else:
             d_form = DynamicLoginForm
@@ -100,9 +112,13 @@ class LoginView(View):
     def get(self,request,*args,**kwargs):
         if request.user.is_authenticated:
             return HttpResponseRedirect(reverse('index'))
+
+        next = request.GET.get('next', '')
+
         login_form = DynamicLoginForm()
         return render(request,'login.html',{
-            'login_form':login_form
+            'login_form':login_form,
+            'next':next,
         })
 
     def post(self,request,*args,**kwargs):
@@ -123,7 +139,10 @@ class LoginView(View):
                 login(request,user)
                 #登录成功之后应该怎么返回页面
                 # return render(request,'index.html')    这种方法不会重定向url
-                return HttpResponseRedirect(reverse('index'))
+                next = request.GET.get("next", "")
+                if next:
+                    return HttpResponseRedirect(next)
+                return HttpResponseRedirect(reverse("index"))
             else:
                 #未查询到用户
                 return render(request,'login.html',{'msg':'用户名或密码错误','login_form':login_form})

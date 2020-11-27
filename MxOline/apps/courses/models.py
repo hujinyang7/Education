@@ -25,6 +25,7 @@ class Course(BaseModel):
     students = models.IntegerField(default=0, verbose_name='学习人数')
     fav_nums = models.IntegerField(default=0, verbose_name='收藏人数')
     click_nums = models.IntegerField(default=0, verbose_name='点击数')
+    notice = models.CharField(verbose_name='课程公共', max_length=300, default='')
     category = models.CharField(default='后端开发', max_length=20, verbose_name='课程类别')
     tag = models.CharField(default='', verbose_name='课程标签', max_length=10)
     youneed_know = models.CharField(default='', max_length=300, verbose_name='课程须知')
@@ -41,6 +42,20 @@ class Course(BaseModel):
     def __str__(self):
         return self.name
 
+    def lesson_nums(self):
+        return self.lesson_set.all().count()
+
+
+class CourseTag(BaseModel):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='课程')
+    tag = models.CharField(max_length=100, verbose_name='标签')
+
+    class Meta:
+        verbose_name = '课程标签'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.tag
 
 
 class Lesson(BaseModel):
@@ -50,7 +65,7 @@ class Lesson(BaseModel):
     blank的意思是说通过form生成html后，这个字段上会有一个必填的标志，不代表数据库中一定要填写这个字段,
     null表明生成数据表的时候是否必填字段'''
     name = models.CharField(max_length=100, verbose_name='章节名')
-    learn_time = models.ImageField(default=0, verbose_name='学习时长（分钟数）')
+    learn_time = models.IntegerField(default=0, verbose_name='学习时长（分钟数）')
 
     class Meta:
         verbose_name = '课程章节'
@@ -64,8 +79,8 @@ class Lesson(BaseModel):
 class Video(BaseModel):
     lesson = models.ForeignKey(Lesson,verbose_name='章节', on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name='视频名')
-    learn_time = models.ImageField(default=0, verbose_name='学习时长（分钟数）')
-    url = models.CharField(max_length=200, verbose_name='访问地址')
+    learn_time = models.IntegerField(default=0, verbose_name='学习时长（分钟数）')
+    url = models.CharField(max_length=1500, verbose_name='访问地址')
 
     class Meta:
         verbose_name = '视频'
