@@ -31,11 +31,14 @@ urlpatterns = [
     # path('org_list/', OrgView.as_view(),name='org_list'),
     url(r'^org/', include(('apps.organizations.urls', 'organizations'), namespace='org')),
 
-    #机构相关页面
+    #课程相关页面
     url(r'^course/', include(('apps.courses.urls', 'courses'), namespace='course')),
 
     #用户相关操作
     url(r'^op/', include(('apps.operations.urls', 'operations'), namespace='op')),
+
+    # 个人中心
+    url(r'^users/', include(('apps.users.urls', 'users'), namespace='users')),
 ]
 
 

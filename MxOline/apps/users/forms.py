@@ -5,8 +5,49 @@ import redis
 from MxOline.settings import  REDIS_PORT, REDIS_HOST
 from apps.users.models import UserProfile
 
+class UpdateMobileForm(forms.Form):
+    mobile = forms.CharField(required=False, min_length=11, max_length=11)
+    code = forms.CharField(required=False, min_length=4, max_length=4)
+
+    def clean_code(self):
+        mobile = self.data.get('mobile')
+        code = self.data.get('code')
+
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, charset='utf8', decode_responses=True)
+        redis_code = r.get(str(mobile))
+        if code != redis_code:
+            raise forms.ValidationError('验证码不正确')
+        return self.cleaned_data
+
+
+class ChangePwdForm(forms.Form):
+    password1 = forms.CharField(required=True, min_length=5)
+    password2 = forms.CharField(required=True, min_length=5)
+
+    def clean(self):
+        pwd1 = self.data['password1']
+        pwd2 = self.data['password2']
+
+        if pwd1 != pwd2:
+            raise forms.ValidationError('密码不一致')
+        return self.cleaned_data
+
+
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['nick_name', 'gender', 'birthday', 'address']
+
+
+class UploadImageForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['image']
+
+
 class RegisterGetForm(forms.Form):
     captcha = CaptchaField()
+
 
 class RegisterPostForm(forms.Form):
     mobile = forms.CharField(required=False, min_length=11, max_length=11)
@@ -30,8 +71,6 @@ class RegisterPostForm(forms.Form):
         if code != redis_code:
             raise forms.ValidationError('验证码不正确')
         return code
-
-
 
 
 class LoginForm(forms.Form):

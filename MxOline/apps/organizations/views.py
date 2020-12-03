@@ -5,7 +5,7 @@ from apps.organizations.models import City, Teacher
 from apps.organizations.forms import AddAskForm
 from django.http import JsonResponse
 
-from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from pure_pagination import Paginator, PageNotAnInteger
 from apps.operations.models import UserFavorite
 
 

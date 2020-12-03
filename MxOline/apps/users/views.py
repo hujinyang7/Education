@@ -5,12 +5,222 @@ from django.contrib.auth import authenticate, login,logout
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 import redis
+from django.contrib.auth.mixins import LoginRequiredMixin
+from pure_pagination import Paginator, PageNotAnInteger
 
-from apps.users.forms import LoginForm,DynamicLoginForm, DyanmicLoginPostForm, RegisterGetForm, RegisterPostForm
+from apps.users.forms import LoginForm,DynamicLoginForm, DyanmicLoginPostForm, RegisterGetForm, \
+     RegisterPostForm, UploadImageForm, UserInfoForm, ChangePwdForm, UpdateMobileForm
 from apps.utils.YunPian import send_single_sms
 from apps.utils.random_str import generate_random
 from MxOline.settings import yp_apikey, REDIS_HOST, REDIS_PORT
 from apps.users.models import UserProfile
+from apps.operations.models import UserFavorite, UserMessage
+from apps.organizations.models import CourseOrg, Teacher
+from apps.courses.models import Course
+
+
+def message_nums(request):
+    if request.user.is_authenticated:
+        return {'unread_nums': request.user.usermessage_set.filter(has_read=False).count()}
+    else:
+        return {}
+
+
+class MyMessageView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request, *args, **kwargs):
+        messages = UserMessage.objects.filter(user=request.user)
+        current_page = 'message'
+        for message in messages:
+            message.has_read = True
+            message.save()
+
+        # 对讲师数据进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(messages, per_page=10, request=request)
+        messages = p.page(page)
+
+        return render(request, "usercenter-message.html", {
+            'messages':messages,
+            'current_page':current_page,
+        })
+
+
+class MyFavCourseView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request, *args, **kwargs):
+        current_page = "myfav_course"
+        course_list = []
+        fav_courses = UserFavorite.objects.filter(user=request.user, fav_type=1)
+        for fav_course in fav_courses:
+            try:
+                course = Course.objects.get(id=fav_course.fav_id)
+                course_list.append(course)
+            except Course.DoesNotExist as e:
+                pass
+        return render(request, "usercenter-fav-course.html", {
+            "course_list": course_list,
+            "current_page": current_page
+        })
+
+
+
+class MyFavTeacherView(LoginRequiredMixin, View):
+    login_url = "/login/"
+
+    def get(self, request, *args, **kwargs):
+        current_page = "myfav_teacher"
+        teacher_list = []
+        fav_teachers = UserFavorite.objects.filter(user=request.user, fav_type=3)
+        for fav_teacher in fav_teachers:
+            teacher = Teacher.objects.get(id=fav_teacher.fav_id)
+            teacher_list.append(teacher)
+            print(teacher_list)
+        return render(request, "usercenter-fav-teacher.html", {
+            "teacher_list": teacher_list,
+            "current_page": current_page
+        })
+
+
+class MyFavOrgView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    def get(self, request, *args, **kwargs):
+        current_page = 'myfavorg'
+        org_list = []
+        fav_orgs = UserFavorite.objects.filter(user=request.user, fav_type=2)
+        for fav_org in fav_orgs:
+            org = CourseOrg.objects.get(id=fav_org.fav_id)
+            org_list.append(org)
+        return render(request, 'usercenter-fav-org.html', {
+            'org_list':org_list,
+            'current_page':current_page,
+        })
+
+
+
+# class MyCourseView(LoginRequiredMixin, View):
+#     ''' 可以用apps/users/urls 中的第二种方式代替'''
+#     login_url = '/login/'
+#     def get(self, request, *args, **kwargs):
+#         current_page = 'mycourse'
+#         # my_courses = UserCourse.objects.filter(user=request.user)
+#         return render(request, 'usercenter-mycourse.html', {
+#             # 'my_courses':my_courses,
+#             'current_page':current_page,
+#         })
+
+
+class ChangeMobileView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    def post(self, request, *args, **kwargs):
+        mobile_form = UpdateMobileForm(request.POST)
+        if mobile_form.is_valid():
+            mobile = mobile_form.cleaned_data['mobile']
+            #已经存在的记录不能重复注册
+            # if request.user.mobile == mobile:
+            #     return JsonResponse({
+            #         'mobile0': '和当前号码一致',
+            #     })
+
+            if UserProfile.objects.filter(mobile=mobile):
+                return JsonResponse({
+                    'mobile0':'该手机号码已经被占用',
+                })
+            user = request.user
+            user.mobile = mobile
+            user.username = mobile
+            user.save()
+            return JsonResponse({
+                'status': 'success',
+            })
+        else:
+            return JsonResponse(mobile_form.errors)
+
+
+
+class ChangePwdView(View):
+    login_url = '/login/'
+    def post(self, request, *args, **kwargs):
+        pwd_form = ChangePwdForm(request.POST)
+        if pwd_form.is_valid():
+            # pwd1 = request.POST.get('password1', '')
+            # pwd2 = request.POST.get('password2', '')
+            #
+            # if pwd1 != pwd2:
+            #     return JsonResponse({
+            #         'status':'fail',
+            #         'message':'密码不一致'
+            #     })
+            pwd1 = request.POST.get('password1', '')
+            user = request.user
+            user.set_password(pwd1)
+            user.save()
+            login(request, user)#密码修改成功后不用重新登录
+
+            return JsonResponse({
+                'status':'success'
+            })
+        else:
+            return JsonResponse(pwd_form.errors)
+
+
+
+
+class UploadImageView(LoginRequiredMixin, View):
+    login_url = '/login/'
+
+    # def save_file(self,file):
+    #     with open('C:/Users/Administrator.USER-20191122KC/Desktop/exercise_bobby/MxOline/media/head_image/uploaded.jpg', 'wb') as f:
+    #         for chunk in file.chunks():
+    #             f.write(chunk)
+
+    def post(self, request, *args, **kwargs):
+        #处理用户上传的头像
+        image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
+        if image_form.save():
+            return JsonResponse({
+                'status':'success'
+            })
+        else:
+            return JsonResponse({
+                'status': 'fail'
+            })
+        # files = request.FILES['image']
+        # self.save_file(files)
+        # pass
+        #1.如果同一个文件上传多次，相同名称的文件应该如何处理
+        #2.文件的保存路径应该写入到user
+        #3.还没有做表单验证
+
+
+class UserInfoView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    def get(self, request, *args, **kwargs):
+        current_page = 'info'
+        captcha_form = RegisterGetForm()
+        return render(request, 'usercenter-info.html', {
+            'captcha_form':captcha_form,
+            'current_page':current_page,
+        })
+
+    def post(self, request, *args, **kwargs):
+        user_info_form = UserInfoForm(request.POST, instance=request.user)
+        if user_info_form.is_valid():
+            user_info_form.save()
+            return JsonResponse({
+                'status':'success'
+            })
+        else:
+            return JsonResponse({user_info_form.errors})
+
+
 
 
 class RegisterView(View):
