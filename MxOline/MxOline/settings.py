@@ -25,10 +25,15 @@ SECRET_KEY = '(_$o&=*=27iygxrl!a_1@nu^aw--tg3_o!17p4*+*7y&8#5zd0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+
+AUTHENTICATION_BACKENDS = [
+    'apps.users.views.CustomAuth'
+]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -134,8 +139,9 @@ USE_TZ = False   #改为 False，不然 django 自动生成的datetime就会使�
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 #云片网相关设置
 yp_apikey = 'f810e2e75f2b5acad379bce56db1cfc3'
@@ -149,7 +155,8 @@ REDIS_PORT = 6379
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 #分页相关设置

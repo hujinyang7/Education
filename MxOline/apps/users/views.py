@@ -7,6 +7,8 @@ from django.urls import reverse
 import redis
 from django.contrib.auth.mixins import LoginRequiredMixin
 from pure_pagination import Paginator, PageNotAnInteger
+from django.contrib.auth.backends import ModelBackend
+from django.db.models import Q
 
 from apps.users.forms import LoginForm,DynamicLoginForm, DyanmicLoginPostForm, RegisterGetForm, \
      RegisterPostForm, UploadImageForm, UserInfoForm, ChangePwdForm, UpdateMobileForm
@@ -14,9 +16,19 @@ from apps.utils.YunPian import send_single_sms
 from apps.utils.random_str import generate_random
 from MxOline.settings import yp_apikey, REDIS_HOST, REDIS_PORT
 from apps.users.models import UserProfile
-from apps.operations.models import UserFavorite, UserMessage
+from apps.operations.models import UserFavorite, UserMessage ,Banner
 from apps.organizations.models import CourseOrg, Teacher
 from apps.courses.models import Course
+
+
+class CustomAuth(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        try:
+            user = UserProfile.objects.get(Q(username=username)|Q(mobile=username))
+            if user.check_password(password):
+                return user
+        except Exception as e:
+            return None
 
 
 def message_nums(request):
@@ -172,7 +184,6 @@ class ChangePwdView(View):
 
 
 
-
 class UploadImageView(LoginRequiredMixin, View):
     login_url = '/login/'
 
@@ -222,7 +233,6 @@ class UserInfoView(LoginRequiredMixin, View):
 
 
 
-
 class RegisterView(View):
     def get(self, request, *args, **kwargs):
         register_get_form = RegisterGetForm()
@@ -257,13 +267,17 @@ class DyanmicLoginView(View):
             return HttpResponseRedirect(reverse("index"))
         next = request.GET.get("next", "")
         login_form = DynamicLoginForm()
+        banners = Banner.objects.all()[:3]
         return render(request, "login.html",{
             "login_form":login_form,
             "next":next,
+            'banners':banners,
         })
+
     def post(self, request, *args, **kwargs):
         login_form = DyanmicLoginPostForm(request.POST)
         dynamic_login = True
+        banners = Banner.objects.all()[:3]
         if login_form.is_valid():
             #没有注册账号依然可以登录
             mobile = login_form.cleaned_data['mobile']
@@ -286,7 +300,9 @@ class DyanmicLoginView(View):
             d_form = DynamicLoginForm
             return render(request,'login.html',{'login_form': login_form,
                                                 'd_form': DynamicLoginForm,
-                                                'dynamic_login': dynamic_login})
+                                                'dynamic_login': dynamic_login,
+                                                'banners':banners,
+                                                })
 
 class SendSmsView(View):
     def post(self, request, *args, **kwargs):
@@ -325,15 +341,18 @@ class LoginView(View):
 
         next = request.GET.get('next', '')
 
+        banners = Banner.objects.all()[:3]
         login_form = DynamicLoginForm()
         return render(request,'login.html',{
             'login_form':login_form,
             'next':next,
+            'banners':banners,
         })
 
     def post(self,request,*args,**kwargs):
         # 表单验证
         login_form = LoginForm(request.POST)
+        banners = Banner.objects.all()[:3]
 
         if login_form.is_valid():
             #用于通过用户和密码查询用户是否存在
@@ -355,7 +374,14 @@ class LoginView(View):
                 return HttpResponseRedirect(reverse("index"))
             else:
                 #未查询到用户
-                return render(request,'login.html',{'msg':'用户名或密码错误','login_form':login_form})
+                return render(request,'login.html',{
+                    'msg':'用户名或密码错误',
+                    'login_form':login_form,
+                    'banners':banners,
+                })
         else:
-            return render(request, 'login.html', {'login_form': login_form})
+            return render(request, 'login.html', {
+                'login_form': login_form,
+                'banners': banners,
+            })
 

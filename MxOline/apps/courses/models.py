@@ -25,7 +25,7 @@ class Course(BaseModel):
     students = models.IntegerField(default=0, verbose_name='学习人数')
     fav_nums = models.IntegerField(default=0, verbose_name='收藏人数')
     click_nums = models.IntegerField(default=0, verbose_name='点击数')
-    notice = models.CharField(verbose_name='课程公共', max_length=300, default='')
+    notice = models.CharField(verbose_name='课程公告', max_length=300, default='')
     category = models.CharField(default='后端开发', max_length=20, verbose_name='课程类别')
     tag = models.CharField(default='', verbose_name='课程标签', max_length=10)
     youneed_know = models.CharField(default='', max_length=300, verbose_name='课程须知')
@@ -34,6 +34,7 @@ class Course(BaseModel):
 
     detail = models.TextField(verbose_name='课程详情')
     image = models.ImageField(upload_to='courses/%Y/%m', verbose_name='封面图', max_length=100)
+    is_banner = models.BooleanField(default=False, verbose_name='是否是广告位')
 
     class Meta:
         verbose_name = '课程信息'

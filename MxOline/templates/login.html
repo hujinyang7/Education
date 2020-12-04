@@ -50,16 +50,16 @@
     <div class="c-box bg-box">
         <div class="login-box clearfix">
             <div class="hd-login clearfix">
-                <a class="index-logo" href="index.html"></a>
+                <a class="index-logo" href="{% url 'login' %}"></a>
                 <h1>用户登录</h1>
-                <a class="index-font" href="index.html">回到首页</a>
+                <a class="index-font" href="{% url 'login' %}">回到首页</a>
             </div>
             <div class="fl slide">
                 <div class="imgslide">
                     <ul class="imgs">
-                            <li><a href=""><img width="483" height="472" src="/static/images/mysql.jpg" /></a></li>
-                            <li><a href=""><img width="483" height="472" src="/static/images/mysql.jpg" /></a></li>
-                            <li><a href=""><img width="483" height="472" src="/static/images/mysql.jpg" /></a></li>
+                        {% for banner in banners %}
+                            <li><a href="{{ banner.url }}"><img width="483" height="472" src="{{banner.image.url}}" /></a></li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="unslider-arrow prev"></div>
@@ -78,9 +78,9 @@
                         <input name="password" id="password_l" value="{{ login_form.password.value }}" type="password" placeholder="请输入您的密码" />
                     </div>
                     <div class="error btns login-form-tips" id="jsLoginTips">{% if login_form.errors %} {% for key,error in login_form.errors.items %} {{ error }} {% endfor %} {% else %} {{ msg }} {% endif %}</div>
-                     <div class="auto-box marb38">
-						<a class="fr" href="forgetpwd.html">忘记密码？</a>
-                     </div>
+{#                     <div class="auto-box marb38">#}
+{#						<a class="fr" href="forgetpwd.html">忘记密码？</a>#}
+{#                     </div>#}
                      <input class="btn btn-green" id="jsLoginBtn" type="submit" value="立即登录 > " />
                     {% csrf_token %}
                 </form>

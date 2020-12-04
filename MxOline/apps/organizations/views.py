@@ -4,6 +4,7 @@ from apps.organizations.models import CourseOrg
 from apps.organizations.models import City, Teacher
 from apps.organizations.forms import AddAskForm
 from django.http import JsonResponse
+from django.db.models import Q
 
 from pure_pagination import Paginator, PageNotAnInteger
 from apps.operations.models import UserFavorite
@@ -37,6 +38,12 @@ class TeacherListView(View):
         teacher_nums = all_teachers.count()
         hot_teachers = Teacher.objects.all().order_by('-click_nums')[:3]
 
+        #搜索关键词
+        keywords = request.GET.get('keywords', '')
+        s_type = 'teacher'
+        if keywords:
+            all_teachers = all_teachers.filter(Q(name__icontains=keywords))
+
         # 对讲师进行排序
         sort = request.GET.get('sort', '')
         if sort == 'hot':
@@ -56,6 +63,8 @@ class TeacherListView(View):
             'teacher_nums':teacher_nums,
             'sort':sort,
             'hot_teachers':hot_teachers,
+            'keywords': keywords,
+            's_type': s_type,
         })
 
 
@@ -179,6 +188,13 @@ class OrgView(View):
         all_citys = City.objects.all()
         hot_orgs = all_orgs.order_by('-click_nums')[:3]
 
+        #搜索关键词
+        keywords = request.GET.get('keywords', '')
+        s_type = 'org'
+        if keywords:
+            all_orgs = all_orgs.filter(Q(name__icontains=keywords)|Q(desc__icontains=keywords))
+
+
         #通过机构类别对课程机构进行筛选
         category = request.GET.get('ct','')
         if category:
@@ -214,5 +230,7 @@ class OrgView(View):
             'city_id':city_id,
             'sort':sort,
             'hot_orgs':hot_orgs,
+            'keywords': keywords,
+            's_type': s_type,
         })
 

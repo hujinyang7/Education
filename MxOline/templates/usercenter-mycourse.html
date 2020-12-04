@@ -28,7 +28,7 @@
                                 <img width="214" height="190" class="scrollLoading" src="{{ user_course.course.image.url }}"/>
                             </a>
                             <div class="des">
-                                <a href="course-detail.html"><h2>{{user_course.course.name}}</h2></a>
+                                <a href="{% url 'course:detail' user_course.course.id %}"><h2>{{user_course.course.name}}</h2></a>
                                 <span class="fl">课时：<i class="key">{{user_course.course.learn_time}}</i></span>
                                 <span class="fr">学习人数：{{user_course.course.students}}</span>
                             </div>

@@ -1,10 +1,38 @@
 from django.views.generic import View
 from django.http import JsonResponse
+from django.shortcuts import render
 
 from apps.operations.forms import UserFavForm, CommentsForm
 from apps.operations.models import UserFavorite, CourseComments
 from apps.courses.models import Course
 from apps.organizations.models import CourseOrg, Teacher
+from apps.operations.models import Banner
+
+
+
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        banners = Banner.objects.all().order_by('index')
+        courses = Course.objects.filter(is_banner=False)[:6]
+        banner_courses = Course.objects.filter(is_banner=True)
+        course_orgs = CourseOrg.objects.all()[:15]
+
+        all_courses = Course.objects.order_by('-add_time')
+
+        # 搜索关键词
+        keywords = request.GET.get('keywords', '')
+        s_type = 'course'
+        if keywords:
+            all_courses = all_courses.filter(Q(name__icontains=keywords)|Q(desc__icontains=keywords)|Q(detail__icontains=keywords))
+
+        return render(request, 'index.html',{
+            'banners':banners,
+            'courses':courses,
+            'banner_courses':banner_courses,
+            'course_orgs':course_orgs,
+            'all_courses':all_courses,
+            's_type':s_type,
+        })
 
 
 class CommentView(View):
