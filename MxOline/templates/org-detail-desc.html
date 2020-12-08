@@ -8,7 +8,9 @@
             <h1>机构介绍</h1>
         </div>
         <div class="des">
-            {{ course_org.desc }}
+            {#对html代码（富文本）取消转义#}
+            {% autoescape off %} {{ course_org.desc }} {% endautoescape %}
+
         </div>
     </div>
 {% endblock %}

@@ -31,6 +31,7 @@ PLUGINS = (
     'importexport',
     'excel',
     'ueditor',
+    'ueditor',
 )
 
 

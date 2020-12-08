@@ -75,12 +75,15 @@ class UserAdmin(object):
 
     def get_model_form(self, **kwargs):
         if self.org_obj is None:
+            '''新增用户的行为'''
             self.form = UserCreationForm
         else:
+            '''修改数据的行为'''
             self.form = UserChangeForm
         return super(UserAdmin, self).get_model_form(**kwargs)
 
     def get_form_layout(self):
+        '控制页面布局'
         if self.org_obj:
             self.form_layout = (
                 Main(

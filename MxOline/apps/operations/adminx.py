@@ -21,6 +21,14 @@ class UserCourseAdmin(object):
     search_fields = ['user','course']
     list_filter = ['user','course','add_time']
 
+    def save_models(self):
+        obj = self.new_obj
+        if not obj.id:
+            obj.save()
+            course = obj.course
+            course.students += 1
+            course.save()
+
 
 class UserMessageAdmin(object):
     list_display = ['user','message','has_read','add_time']

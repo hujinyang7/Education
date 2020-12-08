@@ -43,6 +43,9 @@ urlpatterns = [
 
     # 个人中心
     url(r'^users/', include(('apps.users.urls', 'users'), namespace='users')),
+
+    #配置富文本相关的url
+    url(r'^ueditor/',include('DjangoUeditor.urls')),
 ]
 
 

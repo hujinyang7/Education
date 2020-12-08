@@ -7,6 +7,8 @@ from django.db import models
 from apps.users.models import BaseModel
 from apps.organizations.models import Teacher, CourseOrg
 
+from DjangoUeditor.models import UEditorField
+
 #1.设计表结构有几个重要的点
 '''
 实体1 <关系> 实体2
@@ -32,7 +34,8 @@ class Course(BaseModel):
     teacher_tell = models.CharField(default='', max_length=300, verbose_name='老师告诉你')
     is_classics = models.BooleanField(default=False, verbose_name='是否经典')
 
-    detail = models.TextField(verbose_name='课程详情')
+    detail = UEditorField(verbose_name='课程详情', width=950, height=400, imagePath='courses/ueditor/images/',
+                          filePath='courses/ueditor/files/', default='')
     image = models.ImageField(upload_to='courses/%Y/%m', verbose_name='封面图', max_length=100)
     is_banner = models.BooleanField(default=False, verbose_name='是否是广告位')
 
@@ -45,6 +48,24 @@ class Course(BaseModel):
 
     def lesson_nums(self):
         return self.lesson_set.all().count()
+
+    def show_image(self):
+        from django.utils.safestring import mark_safe
+        return mark_safe("<img src='{}'height='100' width='100'>".format(self.image.url))
+    show_image.short_description = '封面图'
+
+    def go_to(self):
+        from django.utils.safestring import mark_safe
+        return mark_safe("<a href='/course/{}'> 查看详情 </a>".format(self.id))
+    go_to.short_description = '跳转'
+
+
+
+class BannerCourse(Course):
+    class Meta:
+        verbose_name = '轮播课程'
+        verbose_name_plural = verbose_name
+        proxy = True
 
 
 class CourseTag(BaseModel):
