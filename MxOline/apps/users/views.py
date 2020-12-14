@@ -236,12 +236,15 @@ class UserInfoView(LoginRequiredMixin, View):
 class RegisterView(View):
     def get(self, request, *args, **kwargs):
         register_get_form = RegisterGetForm()
+        banners = Banner.objects.all()[:3]
         return render(request,'register.html',{
-            'register_get_form': register_get_form
+            'register_get_form': register_get_form,
+            'banners':banners,
         })
 
     def post(self, request, *args, **kwargs):
         register_post_form = RegisterPostForm(request.POST)
+        banners = Banner.objects.all()[:3]
         dynamic_login = True
         if register_post_form.is_valid():
             mobile = register_post_form.cleaned_data['mobile']
@@ -258,6 +261,7 @@ class RegisterView(View):
             return render(request, 'register.html', {
                 'register_get_form': register_get_form,
                 'register_post_form': register_post_form,
+                'banners':banners,
             })
 
 

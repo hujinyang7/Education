@@ -220,7 +220,7 @@ class OrgView(View):
         except PageNotAnInteger:
             page = 1
 
-        p = Paginator(all_orgs, per_page=10, request=request)
+        p = Paginator(all_orgs, per_page=6, request=request)
         all_orgs = p.page(page)
         return render(request,'org-list.html',{
             'all_orgs':all_orgs,

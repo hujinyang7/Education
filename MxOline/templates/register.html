@@ -56,7 +56,7 @@
         <div class="wp header-box">
             <p class="fl hd-tips">多米乐，您身边的装修平台！</p>
             <ul class="fr hd-bar">
-                <li>服务电话：<span>4001008031</span></li>
+                <li>服务电话：<span>18869095465</span></li>
                 <li><a href="/login/">[登录]</a></li>
                 <li class="active"><a href="/register/">[注册]</a></li>
             </ul>
@@ -72,11 +72,13 @@
                 <a class="index-font" href="/">回到首页</a>
             </div>
             <div class="fl slide">
-                <div class="imgslide has-dots" style="width: 483px; overflow: hidden; height: 0px;">
-                    <ul class="imgs" style="position: relative; left: 0%; width: 0%; height: 0px;">
-
+                <div class="imgslide">
+                    <ul class="imgs">
+                        {% for banner in banners %}
+                            <li><a href="{{ banner.url }}"><img width="483" height="472" src="{{banner.image.url}}" /></a></li>
+                        {% endfor %}
                     </ul>
-                    <ol class="dots"></ol></div>
+                </div>
                 <div class="unslider-arrow prev"></div>
                 <div class="unslider-arrow next"></div>
             </div>

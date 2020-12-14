@@ -62,7 +62,7 @@
                 </div>
             {% if course.notice %}
                 <div id="notice" class="clearfix">
-                    <div class="l"> <strong>课程公告:</strong> <a  href="javascript:void(0)">{{course.notice}}传</a> </div>
+                    <div class="l"> <strong>课程公告:</strong> <a  href="javascript:void(0)">{{course.notice}}</a> </div>
                 </div>
             {% endif %}
 
@@ -70,7 +70,7 @@
                 {% for lesson in course.lesson_set.all %}
                 <div class="chapter chapter-active" >
                     <h3>
-                        <strong><i class="state-expand"></i>{{lesson.name}}识</strong>
+                        <strong><i class="state-expand"></i>{{lesson.name}}</strong>
                     </h3>
                     <ul class="video">
                         {% for video in lesson.video_set.all %}
