@@ -7,7 +7,7 @@
 
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <title>多米乐首页</title>
+    <title>用户注册 | Jaye's Blog</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
 
@@ -34,10 +34,10 @@
                 <input type="button" value="登录" id="jsLoginBtn">
             </div>
             <div class="btns">
-                <span class="fr">没有多米乐账号？<span class="regist btn">立即注册</span></span>
+                <span class="fr">没有账号？<span class="regist btn">立即注册</span></span>
             </div>
         </form>
-    </div>
+    </div>暮雪
 </div>
 <div class="dialog" id="jsDialog">
     <!--提示弹出框-->
@@ -54,7 +54,7 @@
 <header>
     <div class="c-box fff-box">
         <div class="wp header-box">
-            <p class="fl hd-tips">多米乐，您身边的装修平台！</p>
+            <p class="fl hd-tips"></p>
             <ul class="fr hd-bar">
                 <li>服务电话：<span>18869095465</span></li>
                 <li><a href="/login/">[登录]</a></li>
@@ -113,7 +113,7 @@
                     {% csrf_token %}
                     </form>
                 </div>
-                <p class="form-p">已有账号？<a href="http://192.168.43.243:8000/login/">[立即登录]</a></p>
+                <p class="form-p">已有账号？<a href="{% url 'login' %}">[立即登录]</a></p>
             </div>
         </div>
     </div>

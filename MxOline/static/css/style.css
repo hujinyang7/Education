@@ -66,11 +66,23 @@ table.linehei50 td, table.linehei50 th {
 }
 
 .errorpage .wp {
-    width: 1000px;
+    width: 1000px;s
 }
 .footer .code img{
-	width: 100px;
-	height: 100px;
+	width: 150px;
+	height: 150px;
+}
+.footer .fl img{
+	width: 20px;
+	height: 20px;
+}
+.footer .fl a{
+	color:#717171;
+}
+.footer .center{
+    margin-top: -15px;
+	color: #3c932a;
+    font-weight:bold;
 }
 .errorpage .cont {
     width: 100%;

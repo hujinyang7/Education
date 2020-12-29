@@ -170,3 +170,14 @@ PAGINATION_SETTINGS = {
 
     'SHOW_FIRST_PAGE_WHEN_INVALID': True,
 }
+
+
+
+#每次迭代更新的时候，一旦有静态文件(css、js)改动，要运行  python manage.py collectstatic
+#自动化部署  ansible  docker
+
+#错误日志
+#cd /var/log/nginx/
+#access.log 和 error.log
+#tail -f access.log
+
